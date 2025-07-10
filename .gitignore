@@ -1,0 +1,22 @@
+# Ignore model files and other heavy stuff
+*.gguf
+*.bin
+*.pt
+*.pdf
+*.ckpt
+/media/
+/__pycache__/
+/venv/
+/models/
+/tmp/
+/*.log
+*.zip
+*.tar.gz
+*.mp4
+*.mp3
+*.avi
+*.egg-info/
+/.idea/
+/.DS_Store
+*.sqlite3
+*.db
