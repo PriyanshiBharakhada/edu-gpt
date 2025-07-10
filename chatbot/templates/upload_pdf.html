@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📄 Upload PDF & Ask Questions</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #e0f7fa, #ffe4ec);
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 50px auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .header h2 {
+      color: #e91e63;
+      font-size: 1.8rem;
+      margin: 0;
+    }
+
+    .history-btn {
+      background-color: #e91e63;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 0.9rem;
+      transition: background 0.3s;
+    }
+
+    .history-btn:hover {
+      background-color: #c2185b;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #555;
+    }
+
+    .form-group input[type="file"],
+    .form-group input[type="text"] {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      background-color: #ff4081;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+      transition: background 0.3s;
+      margin-top: 10px;
+    }
+
+    .btn:hover {
+      background-color: #e91e63;
+    }
+
+    .success-msg {
+      text-align: center;
+      color: green;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .spinner {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .spinner div {
+      width: 10px;
+      height: 10px;
+      margin: 0 5px;
+      background-color: #e91e63;
+      border-radius: 50%;
+      animation: bounce 0.6s infinite alternate;
+    }
+
+    .spinner div:nth-child(2) { animation-delay: 0.2s; }
+    .spinner div:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      to { transform: translateY(-10px); }
+    }
+
+    #response {
+      display: none;
+      margin-top: 20px;
+      background: #e0f2f1;
+      border-left: 4px solid #009688;
+      padding: 15px;
+      border-radius: 6px;
+      color: #004d40;
+      font-weight: 500;
+    }
+
+    @media (max-width: 600px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .header h2 { font-size: 1.5rem; }
+      .history-btn { font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>📄 Upload PDF & Ask</h2>
+      <a href="{% url 'pdf_qa_history' %}" class="history-btn">📜 History</a>
+    </div>
+
+    <div id="upload-area">
+      <form id="pdfForm" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="pdf">Choose a PDF file:</label>
+          <input type="file" name="pdf" id="pdfInput" required />
+        </div>
+        <button type="submit" class="btn">📤 Upload PDF</button>
+      </form>
+    </div>
+
+    <div id="upload-spinner" class="spinner" style="display:none;">
+      <div></div><div></div><div></div>
+    </div>
+
+    <div id="upload-success" class="success-msg" style="display:none;"></div>
+
+    <hr style="margin: 30px 0;" />
+
+    <div class="form-group">
+      <label for="question">Your Question:</label>
+      <input type="text" id="question" placeholder="e.g. What is the topic of the document?" />
+    </div>
+    <button class="btn" onclick="askQuestion()">🤖 Ask</button>
+
+    <div class="spinner" id="thinking-spinner" style="display:none;">
+      <div></div><div></div><div></div>
+    </div>
+
+    <div id="response"></div>
+  </div>
+
+  <script>
+    // ✅ Upload PDF via JavaScript Fetch
+    document.getElementById("pdfForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const formData = new FormData();
+      const file = document.getElementById("pdfInput").files[0];
+      if (!file) return;
+
+      formData.append("pdf", file);
+      document.getElementById("upload-spinner").style.display = "flex";
+      document.getElementById("upload-success").style.display = "none";
+
+      fetch("{% url 'upload_pdf' %}", {
+        method: "POST",
+        headers: { "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value },
+        body: formData,
+      })
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById("upload-success").innerText = "✅ PDF uploaded successfully!";
+          document.getElementById("upload-success").style.display = "block";
+          document.getElementById("upload-spinner").style.display = "none";
+        })
+
+        .catch(() => {
+          alert("❌ Failed to upload PDF");
+          document.getElementById("upload-spinner").style.display = "none";
+        });
+    });
+
+    function askQuestion() {
+      const question = document.getElementById("question").value.trim();
+      if (!question) {
+        alert("Please enter a question.");
+        return;
+      }
+
+      const spinner = document.getElementById("thinking-spinner");
+      const responseBox = document.getElementById("response");
+      responseBox.style.display = "none";
+      spinner.style.display = "flex";
+
+      fetch("{% url 'pdf_chatbot_response' %}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": document.cookie.match(/csrftoken=([^;]+)/)[1]
+        },
+        body: JSON.stringify({ question: question })
+      })
+        .then(res => res.json())
+        .then(data => {
+          spinner.style.display = "none";
+          responseBox.style.display = "block";
+          responseBox.innerText = "📘 Answer: " + (data.answer || data.error);
+        })
+        .catch(err => {
+          spinner.style.display = "none";
+          alert("Error getting response.");
+          console.error(err);
+        });
+    }
+  </script>
+</body>
+</html>

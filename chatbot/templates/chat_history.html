@@ -1,0 +1,125 @@
+{% load tz %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat History</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #e0f7fa, #ffe4ec);
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #e91e63;
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+    }
+
+    .chat-card {
+      background: #f9f9f9;
+      padding: 16px 20px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      border-left: 5px solid #4caf50;
+      transition: background 0.2s ease-in-out;
+    }
+
+    .chat-card:hover {
+      background: #f1f1f1;
+    }
+
+    .timestamp {
+      font-size: 0.8rem;
+      color: #888;
+      margin-bottom: 5px;
+    }
+
+    .message {
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .response {
+      color: #333;
+      background: #e8f5e9;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      margin-top: 25px;
+      color: #e91e63;
+      font-weight: bold;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .clear-btn {
+      display: block;
+      margin: 0 auto 25px;
+      padding: 10px 20px;
+      background: #f44336;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🕓 Your Chat History</h2>
+
+    <form method="post" action="{% url 'clear-history' %}">
+      {% csrf_token %}
+      <button type="submit" class="clear-btn">🗑️ Clear Chat History</button>
+    </form>
+
+    {% for chat in history %}
+      <div class="chat-card">
+        <div class="timestamp">
+          {% localtime on %}{{ chat.timestamp|date:"d M Y, H:i" }}{% endlocaltime %}
+        </div>
+        <div class="message">🧑 You: {{ chat.message }}</div>
+        <div class="response">🤖 Bot: {{ chat.response }}</div>
+      </div>
+    {% empty %}
+      <p style="text-align: center; color: #777;">No chats yet.</p>
+    {% endfor %}
+
+    <a class="back-link" href="{% url 'chatbot' %}">← Back to Chat</a>
+  </div>
+</body>
+</html>

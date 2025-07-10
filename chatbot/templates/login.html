@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Login - EduGPT</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #e0f7fa, #fce4ec);
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 60px auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      text-align: center;
+      color: #ff4081;
+      margin-bottom: 30px;
+    }
+
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .form-group {
+      position: relative;
+    }
+
+    .toggle-password {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      cursor: pointer;
+      color: #888;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #ff4081;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .link {
+      text-align: center;
+      margin-top: 16px;
+    }
+
+    .link a {
+      color: #2196f3;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .container {
+    background: #fff;
+    padding: 30px;
+    max-width: 600px;
+    margin: auto;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    margin-top:2.5%;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 20px;
+        max-width: 100%;
+    }
+    input[type="file"], input[type="text"], button {
+        font-size: 16px;
+    }
+}
+
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🔐 Login to EduGPT</h2>
+    <form method="POST">
+        {% if messages %}
+           <div class="error-box">
+               {% for message in messages %}
+                  <p style="color: red;">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+ 
+      {% csrf_token %}
+      <input type="text" name="username" placeholder="Username" required />
+
+      <div class="form-group">
+        <input type="password" name="password" placeholder="Password" id="password" required />
+        <span class="toggle-password" onclick="togglePassword()">👁️</span>
+      </div>
+
+      <button type="submit">Login</button>
+    </form>
+    <div class="link">
+      Don't have an account? <a href="{% url 'register' %}">Register</a>
+    </div>
+  </div>
+
+  <script>
+    function togglePassword() {
+      const input = document.getElementById('password');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+  </script>
+</body>
+</html>

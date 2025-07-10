@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Your Profile</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #e0f7fa, #fce4ec);
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    
+    h2 {
+      color: #ff4081;
+      text-align: center;
+    }
+    .info {
+      margin: 20px 0;
+      padding: 15px;
+      background: #fce4ec;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+    .info strong {
+      color: #880e4f;
+    }
+    .back {
+      display: block;
+      margin: 20px auto 0;
+      text-align: center;
+      text-decoration: none;
+      font-weight: bold;
+      color: #2196f3;
+    }
+    .container {
+    background: #fff;
+    padding: 30px;
+    max-width: 600px;
+    margin: auto;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-top:3%;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 20px;
+        max-width: 100%;
+    }
+    input[type="file"], input[type="text"], button {
+        font-size: 16px;
+    }
+}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>👤 Your Profile</h2>
+    <div class="info"><strong>Username:</strong> {{ user.username }}</div>
+    <div class="info"><strong>Email:</strong> {{ user.email }}</div>
+    <div class="info"><strong>Date Joined:</strong> {{ user.date_joined }}</div>
+    <a href="{% url 'chatbot' %}" class="back">⬅ Back to Chat</a>
+  </div>
+</body>
+</html>

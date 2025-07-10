@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDF Q&A History</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #e0f7fa, #ffe4ec);
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #e91e63;
+      margin-bottom: 25px;
+      font-size: 1.8rem;
+    }
+
+    .clear-btn-form {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .clear-btn {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background 0.3s ease;
+    }
+
+    .clear-btn:hover {
+      background-color: #d32f2f;
+    }
+
+    .history-card {
+      background: #f9f9f9;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      border-left: 5px solid #9c27b0;
+      border-radius: 8px;
+    }
+
+    .time {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 6px;
+    }
+
+    .col {
+      margin: 6px 0;
+      color: #444;
+    }
+
+    .back {
+      display: block;
+      text-align: center;
+      margin-top: 25px;
+      font-weight: bold;
+      color: #e91e63;
+      text-decoration: none;
+    }
+
+    .back:hover {
+      text-decoration: underline;
+    }
+
+    .pagination {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.95rem;
+    }
+
+    .pagination a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #9c27b0;
+      font-weight: bold;
+    }
+
+    .pagination span {
+      color: #444;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+        margin: 20px;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📜 PDF Q&A History</h2>
+
+    <!-- 🗑️ Clear History Form -->
+    <form method="post" action="{% url 'clear-pdf-history' %}" class="clear-btn-form">
+      {% csrf_token %}
+      <button type="submit" class="clear-btn">🗑️ Clear Q&A History</button>
+    </form>
+
+    {% for item in history %}
+      <div class="history-card">
+        <div class="time">{{ item.timestamp|date:"d M Y, H:i" }}</div>
+        <div class="col">❓ You asked: {{ item.question }}</div>
+        <div class="col">📘 Answer: {{ item.answer }}</div>
+      </div>
+    {% empty %}
+      <p style="text-align: center; color: #777;">No questions asked yet.</p>
+    {% endfor %}
+
+    {% if is_paginated %}
+      <div class="pagination">
+        {% if history.has_previous %}
+          <a href="?page={{ history.previous_page_number }}">← Prev</a>
+        {% endif %}
+        <span>Page {{ history.number }} of {{ history.paginator.num_pages }}</span>
+        {% if history.has_next %}
+          <a href="?page={{ history.next_page_number }}">Next →</a>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <a href="{% url 'upload_pdf' %}" class="back">← Back to PDF Q&A</a>
+  </div>
+</body>
+</html>
