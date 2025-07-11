@@ -22,3 +22,6 @@
 *.db
 .env
 *.pyc
+*.jar
+bfg-report/
+bfg-*.jar
